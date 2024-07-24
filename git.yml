@@ -10,5 +10,5 @@
   - name: start nginix
     ansible.builtin.systemd:
       name: nginx
-      state: started
+      state: absent
       enabled: yes
