@@ -2,7 +2,7 @@
   hosts: 172.31.2.131
   tasks:
     - name: check if user exists
-      ansible.builtin.command: id roboshop
+      ansible.builtin.command: 
       register: out
       ignore_errors: true
 
