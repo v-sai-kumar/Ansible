@@ -1,5 +1,5 @@
 - name: varibles at task level
-  hosts: 15.207.54.236
+  hosts: 13.233.151.6
   vars:
   - money: "10000 RS"
     land: "5 acres"
