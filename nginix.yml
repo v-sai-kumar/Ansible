@@ -1,0 +1,14 @@
+---
+- name: install nginix
+  hosts: 15.207.54.236
+  become: yes
+  tasks:
+  - name: install nginix
+    ansible.builtin.yum:
+      name: nginx
+      state: installed
+  - name: start nginix
+    ansible.builtin.systemd:
+      name: nginx
+      state: stopped
+      enabled: yes

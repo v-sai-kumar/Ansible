@@ -1,0 +1,17 @@
+- name: varibles at task level
+  hosts: 15.207.54.236
+  vars:
+  - money: "10000 RS"
+    land: "5 acres"
+  tasks:
+  - name: values are taking from playlevel
+    ansible.builtin.debug:
+     msg: "the money the have is {{money}} and the land is {{land}}"
+  - name: inherit values from palylevel and override in task level
+    vars:
+    - money: "20000 RS"
+      land: "5 acres"
+    tasks:
+    - name: task level overrided 
+      ansible.builtin.debug:
+       msg: "the money of inherited  is {{money}} and land is {{land}}"

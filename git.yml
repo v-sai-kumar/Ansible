@@ -1,14 +1,13 @@
 ---
 - name: install nginix
-  hosts: 15.207.54.236
+  hosts: 174.25.45.18
   become: yes
   tasks:
-  - name: install nginix
-    ansible.builtin.yum:
-      name: nginx
-      state: installed
-  - name: start nginix
-    ansible.builtin.systemd:
-      name: nginx
-      state: stopped
-      enabled: yes
+    - name: git install
+      ansible.builtin.yum:
+        - name: git
+          state: installed
+    - name: start git
+      ansible.builtin.systemd:
+        - name: git
+          state: started
