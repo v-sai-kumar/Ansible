@@ -1,9 +1,9 @@
 - name: varibles priniting
   hosts: 13.233.151.6
   vars: # play level varibles
-  - name: sai
-    course: Devops 
-    duration: 110hrs
+  - name: "sai"
+    course: "Devops" 
+    duration: "110hrs"
   tasks:
   - name: the name of trainer and course
     ansible.builtin.debug:
