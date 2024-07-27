@@ -18,5 +18,3 @@
 
 
 
-ansible-playbook -i inventory  -e username=name -e password=password  money="3000"  playbookname.yml
-
