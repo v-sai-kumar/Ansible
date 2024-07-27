@@ -1,6 +1,6 @@
 - name: varibles at task level
-  hosts: 13.233.151.6
-  vars:
+  hosts: dev
+  vars: #playbook level varibles 
   - money: "10000 RS"
     land: "5 acres"
   tasks:
@@ -8,10 +8,15 @@
     ansible.builtin.debug:
      msg: "the money the have is {{money}} and the land is {{land}}"
   - name: inherit values from palylevel and override in task level
-    vars:
+    vars: # task level varibles overrided here 
     - money: "20000 RS"
       land: "5 acres"
     tasks:
     - name: task level overrided 
       ansible.builtin.debug:
        msg: "the money of inherited  is {{money}} and land is {{land}}"
+
+
+
+ansible-playbook -i inventory  -e username=name -e password=password  money="3000"  playbookname.yml
+

@@ -1,0 +1,13 @@
+- name: loops concept
+  hosts: dev
+  become: yes
+  tasks:
+  - name: install list of pacakges
+    ansible.builtin.yum:
+      name: "{{items}}"
+      state: present
+  loop:
+  - git
+  - nginix
+  - java
+ 

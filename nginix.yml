@@ -1,6 +1,6 @@
 ---
-- name: install nginix
-  hosts: 15.207.54.236
+- name: install nginix 
+  hosts: dev
   become: yes
   tasks:
   - name: install nginix
@@ -10,5 +10,5 @@
   - name: start nginix
     ansible.builtin.systemd:
       name: nginx
-      state: stopped
+      state: stooped
       enabled: yes
