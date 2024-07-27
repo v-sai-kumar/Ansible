@@ -1,0 +1,98 @@
+- name: user microservice
+  hosts: dev
+  become: yes
+  tasks:
+  - name: set up node js repo for installation
+    command: curl -sL https://rpm.nodesource.com/setup_lts.x | bash 
+
+  - name: install nodejs
+    yum:
+      name: nodejs 
+      state: installed
+
+  - name: user exists or not check
+    ansible.builtin.command: id roboshop
+    register: out
+    ignore_errors: true
+
+  - name: print the command output
+    ansible.builtin.debug:
+      msg: "output is {{ out }}"
+
+  - name: create user if not exists
+    ansible.builtin.user:
+      name: roboshop
+    when: out.rc != 0
+
+  - name: create a directory
+    ansible.builtin.file:
+      path: /app
+      state: directory
+
+  - name: download app code in created app directory
+    ansible.builtin.get_url:
+      url: https://roboshop-builds.s3.amazonaws.com/user.zip
+      dest: /tmp/user.zip
+
+  - name: change to app directory and unzip
+    ansible.builtin.unarchive:
+      src: /tmp/user.zip
+      dest: /app
+      remote_src: yes 
+
+  - name: install npm package
+    ansible.builtin.yum:
+      name: npm
+      state: installed
+
+  - name: set up and enable service
+    ansible.builtin.systemd:
+      name: npm
+      state: started
+      enabled: yes
+      daemon_reload: yes
+
+# - name: user microservice
+#   hosts: dev
+#   become: yes
+#   tasks:
+#   - name: set up node js repo for installtion
+#     uri: curl -sL https://rpm.nodesource.com/setup_lts.x | bash
+#   - name: install nodejs
+#     yum:
+#      name: nodejs
+#      state: installed
+#   - name: user exists or not check
+#     user:
+#       name: roboshop
+#       register: out  # varibles are stored in out
+#       ignore_errors: true
+#         - name: print the command output
+#           ansible.builtin.debug:
+#             msg: "output is {{ out }}" # if user exists it will take or erros ignored
+#   - name: create user
+#     user:
+#      name: roboshop
+#     when: out!=0
+#   - name: create a directory 
+#     file: 
+#       path: /app
+#   - name: download app code in created app directory
+#     uri: curl -L -o /tmp/user.zip https://roboshop-builds.s3.amazonaws.com/user.zip
+#   - name: change app and directory and unzip
+#     common: '''
+#      cd /app
+#      unzip /tmp/user.zip
+#     ''' 
+#   - name: change directory install npm pacakge
+#     file: 
+#       path: /app
+#   - name: install npm pacakge
+#     yum: 
+#       name: npm
+#       state: installed 
+#   - name: set up service and enable
+#     ansible.builtin.systemd_service:
+#       state: started
+#       daemon_reload: true
+#       name: npm
