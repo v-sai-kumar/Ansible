@@ -1,0 +1,47 @@
+- name: catalogue
+  hosts: dev
+  become: yes
+  tasks:
+  - name: add catlagoue repository
+    ansible.builtin.command: curl -sL https://rpm.nodesource.com/setup_lts.x | bash
+  - name: install nodesjs app
+    ansible.builtin.yum:
+      name: nodejs
+      state: installed
+  - name: checck if user exists
+    ansible.builtin.user:
+      name: roboshop
+      register: out #varaible here out is
+  - name: 
+      ansible.builtin.user:
+        name: roboshop
+    when: out.rc != 0
+  - name: Create a directory if it does not exist
+    ansible.builtin.file:
+      path: /app
+      state: directory
+      mode: '0755'
+  - name: download to newly created directory 
+    ansible.builtin.uri:
+      url: curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip
+  - name: change directroy and unzip
+    ansible.builtin.file:
+      path:  /app
+      unzip: unzip /tmp/catalogue.zip
+  - name: change directory and install pacakges
+    ansible.builtin.command: '''
+        cd /app
+        npm install
+      '''  
+  - name: Restart service and pick catalogue config data
+    ansible.builtin.systemd_service:
+      name: catalogueservice
+      state: restarted
+      daemon_reload: true
+  - name: Reload and start the  service and pick catalogue config data
+    ansible.builtin.systemd_service:
+      name: catalogueservice
+      state: started
+      enabled: true
+
+      
