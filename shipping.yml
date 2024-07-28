@@ -1,0 +1,78 @@
+- name: shipping of orders
+  hosts: all
+  become: yes
+  tasks:
+  - name: install maven
+    yum:
+      name: maven
+      state: installed
+  - name: check if user exists or not 
+    user:
+      name: roboshop
+      register: out
+      ignore_errors: true
+  - when: out.rc != 0
+    name: print if user exists
+    debug:
+      msg: "user name is {{out}}"
+  - name: create a user if does not exists
+    ansible.builtin.user:
+      name: roboshop
+  - name: check /app directory exists or not
+    stat: # stat module is used to check if directory exists or not
+      path: /app 
+      register: directory
+      ignore_errors: true
+  - name: print directory /app exists
+    debug:
+      msg: "directory path is {{directory}}"
+
+  - when: directory!=0
+    name: create directory
+    ansible.builtin.file:
+      path: /app
+      state: directory 
+      chmod: "0755" 
+ 
+  - name: Download the application code to created app directory.
+    ansible.builtin.uri:  
+    uri: https://roboshop-builds.s3.amazonaws.com/shipping.zip  
+    dest: /tmp/shipping.zip
+  
+  - name: change directory and unzip
+    ansible.builtin.unarchive:
+      src: /tmp/shipping.zip
+      dest: /app
+      remote_src: yes
+  
+  - name: download dependecy build application
+    ansible.builtin.file:
+      path: /app
+  
+  - name: mvn clean package now 
+    ansible.builtin.command: mvn clean package 
+    args:
+      chdir: /app
+      
+  - name: Change the working directory to somedir/ before executing the command
+    ansible.builtin.command: mv target/shipping-1.0.jar shipping.jar
+    args:
+      chdir: /app
+  - name: copy shipping service
+    copy:
+      src: shipping.service
+      dest: /etc/systemd/system/shipping.service
+  - name: daemon_reload
+    ansible.builtin.systemd:
+      daemon_reload: true
+  - name: install sql clinet
+    yum:
+      name: mysql
+      state: installed
+  - name: load mysql shemas
+    ansible.builtin.shell: mysql -h mysql.joindevops.online -uroot -pRoboShop@1 < /app/schema/shipping.sql
+  - name: restart shipping
+    ansible.builtin.service:
+      name: shipping
+      state: restarted
+      enabled: true
