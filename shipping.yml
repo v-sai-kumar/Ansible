@@ -12,7 +12,7 @@
       register: out
       ignore_errors: true
   - when: out.rc != 0
-    name: print if user exists
+    name: print if user exists 
     debug:
       msg: "user name is {{out}}"
   - name: create a user if does not exists
